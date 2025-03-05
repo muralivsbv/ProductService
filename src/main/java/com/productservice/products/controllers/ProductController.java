@@ -43,20 +43,38 @@ public class ProductController {
     // adding new product
     @PostMapping("/products")
     public Product addProduct(@RequestBody ProductRequestDto requestDto){
-                 return new Product();
+
+                return productService.addProduct(requestDto);
     }
 
-    //updating a product
-    @PatchMapping("/products{id}")
+    //updating a product it should be Patch mapping but fakestore is not supporting patch so used PUTmapping
+    @PutMapping("/products{id}")
     public Product updateProduct(@PathVariable("id") Long id,
                                  @RequestBody ProductRequestDto requestDto){
-        return new Product();
+        return productService.updateProduct(id,requestDto);
+
     }
 
     @DeleteMapping("/products/{id}")
     public boolean deleteProduct(@PathVariable("id") Long id){
-        return true;
+        return productService.deleteProduct(id);
     }
 
 
 }
+
+
+// for sampleadding a product through postman :
+/* sample data:
+select POST in postnam and hit api http://localhost:8082/products/
+with below body
+
+{
+    "title" : "banaras saree",
+    "price" : 3050,
+    "description":"Your perfect wedding fancy look",
+    "category":"wedding wear",
+    "image" : "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500"
+
+}
+ */
