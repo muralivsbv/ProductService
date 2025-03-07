@@ -1,10 +1,14 @@
 package com.productservice.products.controllers;
 
 import com.productservice.products.dtos.ProductRequestDto;
+import com.productservice.products.dtos.ProductResponseSelf;
+import com.productservice.products.exceptions.ProductNotFoundException;
 import com.productservice.products.models.Category;
 import com.productservice.products.models.Product;
 import com.productservice.products.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -17,12 +21,69 @@ public class ProductController {
      IProductService productService;
 
 
+// below commented code is without handling any exceptions
+//    @GetMapping("/product/{id}")
+//    public Product getSingleProduct(@PathVariable("id") Long id){
+//
+//        return productService.getSingleProduct(id);
+//    }
 
+    //handling the exceptions like null product and all using response entity
     @GetMapping("/product/{id}")
-    public Product getSingleProduct(@PathVariable("id") Long id){
+    public ResponseEntity<ProductResponseSelf> getSingleProduct(@PathVariable("id") Long id) {
 
-        return productService.getSingleProduct(id);
+        Product product;
+
+        try{
+            product = productService.getSingleProduct(id);
+        }catch(ProductNotFoundException e) {
+            System.out.println("Entered into pnf exception : " + id);
+            ProductResponseSelf productResponseSelf = new ProductResponseSelf(null, "Product does not exist");
+            return new ResponseEntity<>(productResponseSelf, HttpStatus.NOT_FOUND);
+        } catch (ArithmeticException e) {
+            System.out.println("Entered into Arithmetic exception : " +id);
+            ProductResponseSelf productResponseSelf = new ProductResponseSelf(null, "something went wrong");
+            return new ResponseEntity<>(productResponseSelf, HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch(Exception e){
+            System.out.println("Entered general exception");
+            throw new RuntimeException();
+        }
+
+        ProductResponseSelf productResponseSelf = new ProductResponseSelf(product, "search success");
+        return new ResponseEntity<>(productResponseSelf,HttpStatus.OK);
+
     }
+
+    //Using exception Handler to avoid all try catch thing to make it separate from main controller code
+    // to make look code neater and also if we want to override the ProductControllerAdvice exceptionhandler
+    // we can override here in the code as shown example of overriding product not found - commented
+    @GetMapping("/product/exception/{id}")
+    public ResponseEntity<ProductResponseSelf> getSingleProductException(@PathVariable("id") Long id)
+            throws ProductNotFoundException {
+
+                    Product product = productService.getSingleProduct(id);
+
+
+        ProductResponseSelf productResponseSelf = new ProductResponseSelf(product, "search success");
+        return new ResponseEntity<>(productResponseSelf,HttpStatus.OK);
+
+    }
+
+
+//   Moved these to ProductControllerAdvice
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ProductResponseSelf> handlingInvalidProduct(){
+        System.out.println("Entered into separate pnf exception : " );
+        ProductResponseSelf productResponseSelf = new ProductResponseSelf(null, "Product does not exist");
+        return new ResponseEntity<>(productResponseSelf, HttpStatus.NOT_FOUND);
+    }
+
+//    @ExceptionHandler(ArithmeticException.class)
+//    public ResponseEntity<ProductResponseSelf> handlingArithmeticException(){
+//        System.out.println("Entered into separate Arithmetic exception : " );
+//        ProductResponseSelf productResponseSelf = new ProductResponseSelf(null, "something went wrong");
+//        return new ResponseEntity<>(productResponseSelf, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     @GetMapping("/products")
     public List<Product> getALlProducts(){

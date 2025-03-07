@@ -2,6 +2,7 @@ package com.productservice.products.service;
 
 import com.productservice.products.dtos.ProductRequestDto;
 import com.productservice.products.dtos.ProductResponseDto;
+import com.productservice.products.exceptions.ProductNotFoundException;
 import com.productservice.products.models.Category;
 import com.productservice.products.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,21 @@ public class FakestoreProductService implements IProductService{
     @Autowired
     RestTemplate restTemplate;
     @Override
-    public Product getSingleProduct(Long id) {
+    public Product getSingleProduct(Long id) throws ProductNotFoundException {
+        // instead of creating a object of resttemplate here we can autowire by marking it as bean in config packgae
+        //  .. eventhough it is code(RestTemplate) outside our project we can mark it as a bean using config
       //  RestTemplate restTemplate = new RestTemplate();
         //http://localhost:8082/product/8
-        System.out.println("Entered get single product method after hitting api");
+        System.out.println("Entered get single product method after hitting api : " +id);
+
+
+        if(id>40){
+            throw new ArithmeticException();
+        }
+        if(id>20 && id<=40){
+
+            throw new ProductNotFoundException();
+        }
         ProductResponseDto response = restTemplate.getForObject("https://fakestoreapi.com/products/" + id,
                 ProductResponseDto.class);
 
@@ -73,7 +85,9 @@ public class FakestoreProductService implements IProductService{
 //        HttpEntity<ProductRequestDto> requestEntity = new HttpEntity<>(requestDto, headers);
 //
 //        restTemplate.exchange(url, HttpMethod.PUT, requestEntity, Void.class);
-        return getSingleProduct(id);
+   //     return getSingleProduct(id);
+
+        return new Product();
     }
 
     @Override
