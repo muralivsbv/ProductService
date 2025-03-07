@@ -18,6 +18,7 @@ import java.util.List;
 
 
 @Service
+//@Service("FakestoreProductService") Better to use this one as we are sure of bean name to put in @qualifer of the product controller
 public class FakestoreProductService implements IProductService{
 
     @Autowired
@@ -97,6 +98,11 @@ public class FakestoreProductService implements IProductService{
         restTemplate.delete(url);
         System.out.println("resttemplate deletion step done");
         return true;
+    }
+
+    @Override
+    public Product getSingleProductbyName(String name) {
+        return null;
     }
 
     private Product getProductFromResponseDto(ProductResponseDto response) {

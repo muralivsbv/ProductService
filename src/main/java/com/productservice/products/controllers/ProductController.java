@@ -7,6 +7,7 @@ import com.productservice.products.models.Category;
 import com.productservice.products.models.Product;
 import com.productservice.products.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +15,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 // new productservice
 @RestController
 public class ProductController {
+
+
+    //  @Qualifier("DBProductService")   // To make sure which service instance to be injected alternatively this can be achieved through profile in run time changing profile in application.properties
     @Autowired
-     IProductService productService;
+    @Qualifier("fakestoreProductService")
+    IProductService productService;
+
 
 
 // below commented code is without handling any exceptions and also no wrapper(ResponseEntity) around product object// so no meaningfull message can be communicated to UI when this api invoked from front end
@@ -35,6 +42,7 @@ public class ProductController {
         Product product;
 
         try{
+            System.out.println("Entered into try block");
             product = productService.getSingleProduct(id);
         }catch(ProductNotFoundException e) {
             System.out.println("Entered into pnf exception : " + id);
@@ -84,6 +92,21 @@ public class ProductController {
 //        ProductResponseSelf productResponseSelf = new ProductResponseSelf(null, "something went wrong");
 //        return new ResponseEntity<>(productResponseSelf, HttpStatus.INTERNAL_SERVER_ERROR);
 //    }
+
+    //Getmapping with name
+    @GetMapping("/product/search")
+    public ResponseEntity<ProductResponseSelf> getSingleProduct(@RequestParam("name") String name) {
+
+        Product product;
+
+
+            product = productService.getSingleProductbyName(name);
+
+
+        ProductResponseSelf productResponseSelf = new ProductResponseSelf(product, "search success");
+        return new ResponseEntity<>(productResponseSelf,HttpStatus.OK);
+
+    }
 
     @GetMapping("/products")
     public List<Product> getALlProducts(){
