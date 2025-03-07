@@ -21,7 +21,7 @@ public class ProductController {
      IProductService productService;
 
 
-// below commented code is without handling any exceptions
+// below commented code is without handling any exceptions and also no wrapper(ResponseEntity) around product object// so no meaningfull message can be communicated to UI when this api invoked from front end
 //    @GetMapping("/product/{id}")
 //    public Product getSingleProduct(@PathVariable("id") Long id){
 //
@@ -70,7 +70,7 @@ public class ProductController {
     }
 
 
-//   Moved these to ProductControllerAdvice
+//   Moved these to ProductControllerAdvice so that all other controllers can also us this
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ProductResponseSelf> handlingInvalidProduct(){
         System.out.println("Entered into separate pnf exception : " );
