@@ -26,7 +26,8 @@ public class DBProductService implements IProductService{
 
             throw new ProductNotFoundException();
         }
-        return productRepository.findByid(id);
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id)); // ✅ Convert Optional to Product
     }
 
 
@@ -34,6 +35,12 @@ public class DBProductService implements IProductService{
         System.out.println("coming into DB getSingleProduct method : "+name);
 
         return productRepository.findByName(name);
+    }
+
+    @Override
+    public Product getSingleProductByIdAndName(Long id, String name) {
+        System.out.println("In DB service two parm menthod : id : "+ id +" name : "+name);
+        return productRepository.findByIdAndName(id,name);
     }
 
     @Override

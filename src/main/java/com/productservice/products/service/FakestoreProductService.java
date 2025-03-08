@@ -105,6 +105,11 @@ public class FakestoreProductService implements IProductService{
         return null;
     }
 
+    @Override
+    public Product getSingleProductByIdAndName(Long id, String name) {
+        return null;
+    }
+
     private Product getProductFromResponseDto(ProductResponseDto response) {
         System.out.println("Converting response to product : "+response.getId());
         Product product= new Product();

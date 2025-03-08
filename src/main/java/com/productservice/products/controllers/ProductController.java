@@ -23,7 +23,8 @@ public class ProductController {
 
     //  @Qualifier("DBProductService")   // To make sure which service instance to be injected alternatively this can be achieved through profile in run time changing profile in application.properties
     @Autowired
-    @Qualifier("fakestoreProductService")
+   // @Qualifier("fakestoreProductService")
+    @Qualifier("DBProductService")
     IProductService productService;
 
 
@@ -52,10 +53,12 @@ public class ProductController {
             System.out.println("Entered into Arithmetic exception : " +id);
             ProductResponseSelf productResponseSelf = new ProductResponseSelf(null, "something went wrong");
             return new ResponseEntity<>(productResponseSelf, HttpStatus.INTERNAL_SERVER_ERROR);
-        }catch(Exception e){
-            System.out.println("Entered general exception");
-            throw new RuntimeException();
-        }
+      }
+//        catch(Exception e){
+//            System.out.println("Entered general exception");
+//            ProductResponseSelf productResponseSelf = new ProductResponseSelf(null, "wrong product");
+//            return new ResponseEntity<>(productResponseSelf, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
 
         ProductResponseSelf productResponseSelf = new ProductResponseSelf(product, "search success");
         return new ResponseEntity<>(productResponseSelf,HttpStatus.OK);
@@ -101,6 +104,22 @@ public class ProductController {
 
 
             product = productService.getSingleProductbyName(name);
+
+
+        ProductResponseSelf productResponseSelf = new ProductResponseSelf(product, "search success");
+        return new ResponseEntity<>(productResponseSelf,HttpStatus.OK);
+
+    }
+
+    // using two parms in API call and using JPA multiple where cols tested
+    // sample call : http://localhost:8082/product/searchbytwoparm?id=178&name=iphone 18
+    @GetMapping("/product/searchbytwoparm")
+    public ResponseEntity<ProductResponseSelf> getSingleProduct(@RequestParam("id") Long id,@RequestParam("name") String name) {
+       System.out.println("In controlller search by twoparm");
+        Product product;
+
+
+        product = productService.getSingleProductByIdAndName(id,name);
 
 
         ProductResponseSelf productResponseSelf = new ProductResponseSelf(product, "search success");

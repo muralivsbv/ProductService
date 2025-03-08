@@ -19,4 +19,5 @@ public interface IProductService {
     boolean deleteProduct(Long id);
 
     Product getSingleProductbyName(String name);
+    Product getSingleProductByIdAndName(Long id,String name);
 }
